@@ -1,0 +1,15 @@
+<h2>Admin Panel</h2>
+<div id="appointments"></div>
+<script>
+fetch('/data')
+  .then(res => res.json())
+  .then(data => {
+    let html = '';
+    data.forEach(appt => {
+      html += `<p>${appt.name} - ${appt.event} - ${appt.date} ${appt.time} - ${appt.status}
+        <a href="/update/${appt.id}/Confirmed">Confirm</a> |
+        <a href="/update/${appt.id}/Rejected">Reject</a></p>`;
+    });
+    document.getElementById('appointments').innerHTML = html;
+  });
+</script>

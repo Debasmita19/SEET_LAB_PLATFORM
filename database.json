@@ -1,0 +1,55 @@
+{
+  "appointments": [
+    {
+      "id": 1744591242070,
+      "name": "Sowjanya Karanam",
+      "email": "karas03@pfw.edu",
+      "event": "Lab",
+      "date": "2025-04-15",
+      "time": "21:40",
+      "status": "Rejected"
+    },
+    {
+      "id": 1744666326365,
+      "name": "Sowjanya Karanam",
+      "email": "karas03@pfw.edu",
+      "event": "Lab",
+      "date": "2025-04-21",
+      "time": "17:32",
+      "status": "Pending"
+    },
+    {
+      "id": 1744667852756,
+      "name": "Sowjanya Karanam",
+      "email": "sowjanyakaranam19@gmail.com",
+      "event": "Lab",
+      "date": "2025-04-18",
+      "time": "06:00",
+      "status": "Pending"
+    },
+    {
+      "id": 1744667922890,
+      "name": "Sowjanya Karanam",
+      "email": "karas03@pfw.edu",
+      "event": "Lab",
+      "date": "2025-04-15",
+      "time": "17:58",
+      "status": "Pending"
+    },
+    {
+      "id": 1744678778071,
+      "name": "Sowjanya Karanam",
+      "email": "karas03@pfw.edu",
+      "event": "Lab",
+      "date": "2025-04-15",
+      "time": "20:59",
+      "status": "Pending"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123"
+    }
+  ]
+}

@@ -9,12 +9,12 @@ function UserSignup() {
   const handleUserSignup = (e) => {
     e.preventDefault();
     console.log("User signup:", { email, password, confirm });
-    // Add user signup logic here
+    
   };
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row">
-      {/* LEFT COLUMN: User Portal */}
+      
       <div className="md:w-1/2 h-full bg-indigo-600 flex flex-col items-center justify-center p-8">
         <h2 className="text-white text-3xl font-bold mb-6">Join User Portal</h2>
         <button className="bg-white text-indigo-600 w-64 py-2 rounded-full mb-4 shadow hover:bg-gray-100 transition">
@@ -25,7 +25,7 @@ function UserSignup() {
         </button>
       </div>
 
-      {/* RIGHT COLUMN: Signup Form */}
+      
       <div className="md:w-1/2 h-full flex items-center justify-center bg-white">
         <form onSubmit={handleUserSignup} className="w-full max-w-sm p-8 shadow-lg rounded">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">User Signup</h2>

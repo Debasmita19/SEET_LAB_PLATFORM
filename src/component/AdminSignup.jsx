@@ -1,20 +1,33 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; 
 
 function AdminSignup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
+  const navigate = useNavigate(); 
+
   const handleAdminSignup = (e) => {
     e.preventDefault();
     console.log("Admin signup:", { email, password, confirm });
+
+    if (password !== confirm) {
+      alert("Passwords do not match!");
+      return;
+    }
+
     
+    localStorage.setItem("isAdminLoggedIn", "true");
+    localStorage.setItem("adminEmail", email); 
+
+   
+    navigate("/admin/dashboard");
   };
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row">
-      {/* LEFT COLUMN */}
+      
       <div className="md:w-1/2 h-full bg-green-600 flex flex-col items-center justify-center p-8">
         <h2 className="text-white text-3xl font-bold mb-6">Join Admin Portal</h2>
         <button className="bg-white text-green-600 w-64 py-2 rounded-full mb-4 shadow hover:bg-gray-100 transition">
@@ -25,7 +38,7 @@ function AdminSignup() {
         </button>
       </div>
 
-      {/* RIGHT COLUMN */}
+      
       <div className="md:w-1/2 h-full flex items-center justify-center bg-white">
         <form
           onSubmit={handleAdminSignup}

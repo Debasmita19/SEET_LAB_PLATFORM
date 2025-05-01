@@ -1,19 +1,34 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
     console.log("Admin login:", { username, password });
+
     
+    const dummyEmail = "admin@example.com";
+    const dummyPassword = "admin123";
+
+    if (username === dummyEmail && password === dummyPassword) {
+      
+      localStorage.setItem("isAdminLoggedIn", "true");
+      localStorage.setItem("adminEmail", username);
+
+      
+      navigate("/admin/dashboard");
+    } else {
+      alert("Invalid username or password!"); 
+    }
   };
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row">
-      {/* LEFT COLUMN: Bold background, social sign-in */}
+     
       <div className="md:w-1/2 h-full bg-blue-600 flex flex-col items-center justify-center p-8">
         <h2 className="text-white text-3xl font-bold mb-6">Admin Portal</h2>
         <button className="bg-white text-blue-600 w-64 py-2 rounded-full mb-4 shadow hover:bg-gray-100 transition">
@@ -24,7 +39,7 @@ function AdminLogin() {
         </button>
       </div>
 
-      {/* RIGHT COLUMN: Form area */}
+      
       <div className="md:w-1/2 h-full flex items-center justify-center bg-white">
         <form
           onSubmit={handleAdminLogin}
@@ -33,10 +48,10 @@ function AdminLogin() {
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Admin Login</h2>
 
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Username</label>
+            <label className="block text-gray-700 mb-1">Email</label>
             <input
               className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
+              type="email"
               placeholder="admin@example.com"
               value={username}
               onChange={(e) => setUsername(e.target.value)}

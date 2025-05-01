@@ -1,19 +1,33 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // 
 
 function UserLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // 
 
   const handleUserLogin = (e) => {
     e.preventDefault();
     console.log("User login:", { username, password });
-    // Add user login logic here
+
+    const dummyEmail = "user@example.com";
+    const dummyPassword = "user123";
+
+    if (username === dummyEmail && password === dummyPassword) {
+      
+      localStorage.setItem("isUserLoggedIn", "true");
+      localStorage.setItem("userEmail", username);
+
+      
+      navigate("/user/dashboard");
+    } else {
+      alert("Invalid user credentials!");
+    }
   };
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row">
-      {/* LEFT COLUMN: User Portal */}
+      
       <div className="md:w-1/2 h-full bg-indigo-600 flex flex-col items-center justify-center p-8">
         <h2 className="text-white text-3xl font-bold mb-6">User Portal</h2>
         <button className="bg-white text-indigo-600 w-64 py-2 rounded-full mb-4 shadow hover:bg-gray-100 transition">
@@ -24,7 +38,7 @@ function UserLogin() {
         </button>
       </div>
 
-      {/* RIGHT COLUMN: Login Form */}
+      
       <div className="md:w-1/2 h-full flex items-center justify-center bg-white">
         <form onSubmit={handleUserLogin} className="w-full max-w-sm p-8 shadow-lg rounded">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">User Login</h2>

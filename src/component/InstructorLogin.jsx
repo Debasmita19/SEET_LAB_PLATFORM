@@ -1,19 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function InstructorLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleInstructorLogin = (e) => {
     e.preventDefault();
     console.log("Instructor login:", { username, password });
-    // Add instructor login logic here
+
+    const dummyEmail = "instructor@example.com";
+    const dummyPassword = "instructor123";
+
+    if (username === dummyEmail && password === dummyPassword) {
+      localStorage.setItem("isInstructorLoggedIn", "true");
+      localStorage.setItem("instructorEmail", username);
+
+      navigate("/instructor/dashboard");
+    } else {
+      alert("Invalid instructor credentials!");
+    }
   };
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row">
-      {/* LEFT COLUMN: Instructor Portal */}
+      {/* LEFT COLUMN */}
       <div className="md:w-1/2 h-full bg-orange-600 flex flex-col items-center justify-center p-8">
         <h2 className="text-white text-3xl font-bold mb-6">Instructor Portal</h2>
         <button className="bg-white text-orange-600 w-64 py-2 rounded-full mb-4 shadow hover:bg-gray-100 transition">
@@ -24,7 +36,7 @@ function InstructorLogin() {
         </button>
       </div>
 
-      {/* RIGHT COLUMN: Login Form */}
+      {/* RIGHT COLUMN */}
       <div className="md:w-1/2 h-full flex items-center justify-center bg-white">
         <form onSubmit={handleInstructorLogin} className="w-full max-w-sm p-8 shadow-lg rounded">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Instructor Login</h2>

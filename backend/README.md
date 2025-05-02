@@ -1,6 +1,6 @@
 # SEET LAB Activities & Events – Backend
 
-This is the backend server for the SEET LAB platform, built with **Express.js**, **MongoDB**, and **JWT-based role authentication**. It supports event creation, student bookings, admin-level notifications, and email alerts.
+This is the backend server for the SEET LAB platform, built with **Express.js**, **MongoDB**, and **JWT-based role authentication**. It supports event creation, student bookings, admin-level notifications, attendee confirmations, password management, and email alerts.
 
 ---
 
@@ -53,46 +53,54 @@ npx nodemon index.js
 
 ### 🔐 Authentication (By Shreshta)
 
-| Method | Endpoint         | Access | Description              |
-|--------|------------------|--------|--------------------------|
-| POST   | `/api/auth/signup` | Public | Register a new user      |
-| POST   | `/api/auth/login`  | Public | Login and receive token  |
+| Method | Endpoint             | Access | Description              |
+|--------|----------------------|--------|--------------------------|
+| POST   | `/api/auth/signup`   | Public | Register a new user      |
+| POST   | `/api/auth/login`    | Public | Login and receive token  |
 
 ---
 
 ### 👥 User Management (By Shreshta)
 
-| Method | Endpoint                 | Access  | Description                  |
-|--------|--------------------------|---------|------------------------------|
-| PUT    | `/api/users/:id/role`    | Admin   | Update user role             |
+| Method | Endpoint                   | Access  | Description                          |
+|--------|----------------------------|---------|--------------------------------------|
+| PUT    | `/api/users/:id/role`      | Admin   | Update user role                     |
+| GET    | `/api/users/me`            | User    | View own profile                     |
+| PUT    | `/api/users/me/password`   | User    | Change own password                  |
+| PUT    | `/api/users/:id/password`  | Admin   | Admin resets any user's password     |
+| GET    | `/api/users`               | Admin   | View all registered users            |
 
 ---
 
 ### 🗕 Event APIs (By Chaitra)
 
-| Method | Endpoint          | Access           | Description                  |
-|--------|-------------------|------------------|------------------------------|
-| POST   | `/api/events`     | Tutor/Admin      | Create a new event           |
-| GET    | `/api/events`     | Public           | View all events              |
-| GET    | `/api/events/:id` | Public           | View specific event          |
+| Method | Endpoint                              | Access           | Description                                |
+|--------|----------------------------------------|------------------|--------------------------------------------|
+| POST   | `/api/events`                          | Tutor/Admin      | Create a new event                         |
+| GET    | `/api/events`                          | Public           | View all events                            |
+| GET    | `/api/events/:id`                      | Public           | View specific event                        |
+| PUT    | `/api/events/:id`                      | Admin/Instructor | Edit event details                         |
+| PUT    | `/api/events/:id/confirm-attendee/:userId` | Admin/Instructor | Confirm a student's attendance         |
 
 ---
 
 ### 🎟 Booking APIs (By Chaitra)
 
-| Method | Endpoint                     | Access   | Description                    |
-|--------|------------------------------|----------|--------------------------------|
-| POST   | `/api/events/:id/book`       | User     | Book an event                  |
-| GET    | `/api/events/my-bookings`    | User     | View bookings by logged-in user|
+| Method | Endpoint                         | Access   | Description                             |
+|--------|----------------------------------|----------|-----------------------------------------|
+| POST   | `/api/events/:id/book`           | User     | Book an event                           |
+| GET    | `/api/events/my-bookings`        | User     | View own bookings                       |
+| GET    | `/api/events/event/:id/bookings` | Admin/Tutor | View attendees for a specific event |
 
 ---
 
 ### 📣 Notification APIs (By Shreshta)
 
-| Method | Endpoint              | Access  | Description                        |
-|--------|-----------------------|---------|------------------------------------|
-| POST   | `/api/notifications`  | Admin   | Send in-app or email notifications |
-| GET    | `/api/notifications`  | User    | View notifications                 |
+| Method | Endpoint                         | Access  | Description                                 |
+|--------|----------------------------------|---------|---------------------------------------------|
+| POST   | `/api/notifications`             | Admin   | Send in-app or email notifications          |
+| GET    | `/api/notifications`             | User    | View personal notifications                 |
+| POST   | `/api/notifications/:id/resend`  | Admin   | Resend a previously sent notification       |
 
 ---
 
@@ -131,20 +139,14 @@ Emails are sent via Gmail SMTP. Use an App Password from [Google Security](https
 
 ## 👩‍💻 Contributors
 
-| Name      | Responsibilities                   |
-|-----------|------------------------------------|
-| Chaitra   | Events, Bookings, Route Protection |
-| Shreshta  | Auth, Notifications, Admin Tools   |
+| Name      | Responsibilities                            |
+|-----------|---------------------------------------------|
+| Chaitra   | Events, Bookings, Attendee Management       |
+| Shreshta  | Auth, User Admin Tools, Notifications       |
 
 ---
 
 ## 📜 License
 
 MIT License – you are free to use and adapt.
-
----
-
-## 💬 Questions?
-
-Contact the team or raise an issue on the GitHub repository.
 

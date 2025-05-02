@@ -10,4 +10,8 @@ router.post('/', authMiddleware, permit('Admin'), notificationController.sendNot
 // User views their notifications
 router.get('/', authMiddleware, notificationController.getMyNotifications);
 
+// Resend a notification to the same recipient
+router.post('/:id/resend', authMiddleware, permit('Admin'), notificationController.resendNotification);
+
+
 module.exports = router;

@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Event = require('../models/Event');
+const User = require('../models/User');
 
 // Book an event (Students only)
 exports.bookEvent = async (req, res) => {
@@ -37,5 +38,36 @@ exports.getMyBookings = async (req, res) => {
     return res.status(200).json(bookings);
   } catch (error) {
     return res.status(500).json({ message: 'Server error while fetching bookings.', error: error.message });
+  }
+};
+
+
+// View all bookings for a specific event (Admin / Instructor)
+exports.getEventBookings = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found.' });
+    }
+
+    // Only allow access if user is Admin or event creator (Instructor)
+    if (req.user.role !== 'Admin' && event.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You are not authorized to view this event\'s attendees.' });
+    }
+
+    // Fetch all bookings for this event
+    const bookings = await Booking.find({ event: eventId })
+      .populate('student', 'name email role')
+      .sort({ bookedAt: -1 });
+
+    return res.status(200).json({
+      eventTitle: event.title,
+      totalBookings: bookings.length,
+      bookings
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error while fetching attendees.', error: error.message });
   }
 };

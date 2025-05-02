@@ -8,8 +8,16 @@ const eventSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    required: true
   },
+  category: {
+    type: String,
+    trim: true,
+    default: 'General'
+  },
+  tags: [{
+    type: String
+  }],
   date: {
     type: Date,
     required: true
@@ -22,6 +30,10 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  bannerImage: {
+    type: String, // Could be a URL to an image
+    default: ''
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -30,7 +42,16 @@ const eventSchema = new mongoose.Schema({
   capacity: {
     type: Number,
     default: 100
-  }
+  },
+  status: {
+    type: String,
+    enum: ['Upcoming', 'Completed', 'Cancelled'],
+    default: 'Upcoming'
+  },
+  confirmedAttendees: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }]
 }, {
   timestamps: true
 });

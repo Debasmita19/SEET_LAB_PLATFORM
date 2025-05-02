@@ -10,4 +10,7 @@ router.post('/:id/book', authMiddleware, permit('User', 'Tutor', 'Admin'), booki
 // Get logged-in user's bookings
 router.get('/my-bookings', authMiddleware, bookingController.getMyBookings);
 
+// View all bookings for a specific event
+router.get('/event/:id/bookings', authMiddleware, permit('Tutor', 'Admin'), bookingController.getEventBookings);
+
 module.exports = router;

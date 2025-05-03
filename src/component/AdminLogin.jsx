@@ -1,87 +1,91 @@
-import { useState } from "react";
+// src/components/AdminLogin.jsx
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import purdueLogo from "../assets/pfw.jpg";
+import Navbar from "./Navbar";
+import API from "../utils/api";
+import { getAuth } from "../utils/auth";
 
 function AdminLogin() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleAdminLogin = (e) => {
+  useEffect(() => {
+    const auth = getAuth();
+    if (auth?.role === "Admin") navigate("/admin/dashboard");
+  }, []);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Admin login:", { username, password });
-
-    
-    const dummyEmail = "admin@example.com";
-    const dummyPassword = "admin123";
-
-    if (username === dummyEmail && password === dummyPassword) {
-      
-      localStorage.setItem("isAdminLoggedIn", "true");
-      localStorage.setItem("adminEmail", username);
-
-      
+    try {
+      const res = await API.post("/auth/login", { email, password });
+      const { token, user } = res.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", user.email);
+      localStorage.setItem("userRole", user.role);
       navigate("/admin/dashboard");
-    } else {
-      alert("Invalid username or password!"); 
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div className="h-screen w-full flex flex-col md:flex-row">
-     
-      <div className="md:w-1/2 h-full bg-blue-600 flex flex-col items-center justify-center p-8">
-        <h2 className="text-white text-3xl font-bold mb-6">Admin Portal</h2>
-        <button className="bg-white text-blue-600 w-64 py-2 rounded-full mb-4 shadow hover:bg-gray-100 transition">
-          Sign in with Google
-        </button>
-        <button className="bg-white text-blue-600 w-64 py-2 rounded-full shadow hover:bg-gray-100 transition">
-          Sign in with Facebook
-        </button>
-      </div>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)]">
+        <div className="md:w-1/2 bg-gradient-to-br from-green-100 to-white flex flex-col items-center justify-center p-10 relative overflow-hidden">
+          <div
+            className="absolute opacity-10 w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${purdueLogo})` }}
+          ></div>
+          <img src={purdueLogo} alt="Purdue Logo" className="w-52 mb-6 relative z-10" />
+          <h2 className="text-3xl font-bold text-gray-800 text-center relative z-10">
+            Admin Login Portal
+          </h2>
+          <p className="mt-4 text-gray-700 text-center text-sm max-w-xs relative z-10">
+            Access admin tools to manage events and users on SEET LAB.
+          </p>
+        </div>
 
-      
-      <div className="md:w-1/2 h-full flex items-center justify-center bg-white">
-        <form
-          onSubmit={handleAdminLogin}
-          className="w-full max-w-sm p-8 shadow-lg rounded"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Admin Login</h2>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Email</label>
+        <div className="md:w-1/2 flex items-center justify-center p-10 bg-white">
+          <form
+            onSubmit={handleLogin}
+            className="w-full max-w-md bg-white p-8 shadow-xl rounded-lg border"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-green-700">Admin Login</h2>
             <input
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               type="email"
-              placeholder="admin@example.com"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full mb-4 border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
             />
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-1">Password</label>
             <input
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               type="password"
-              placeholder="••••••••"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full mb-6 border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
             />
-          </div>
-
-          <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition mb-3">
-            Sign In
-          </button>
-
-          <div className="flex justify-between text-sm">
-            <Link to="/choose-role?action=login" className="text-blue-600 hover:underline">
-              Switch Role
-            </Link>
-            <Link to="/admin/signup" className="text-blue-600 hover:underline">
-              Need an Admin Account?
-            </Link>
-          </div>
-        </form>
+            <button
+              type="submit"
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition shadow"
+            >
+              Sign In
+            </button>
+            <div className="mt-4 text-sm flex justify-between">
+              <Link to="/choose-role?action=login" className="text-green-600 hover:underline">
+                Switch Role
+              </Link>
+              <Link to="/admin/signup" className="text-green-600 hover:underline">
+                Need an Admin Account?
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

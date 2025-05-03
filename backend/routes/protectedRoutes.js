@@ -10,7 +10,7 @@ router.get('/admin-dashboard', authMiddleware, permit('Admin'), (req, res) => {
   });
 });
 
-router.get('/tutor-section', authMiddleware, permit('Tutor', 'Admin'), (req, res) => {
+router.get('/tutor-section', authMiddleware, permit('Instructor', 'Admin'), (req, res) => {
   res.json({
     message: 'Welcome to the tutor section!',
     user: req.user

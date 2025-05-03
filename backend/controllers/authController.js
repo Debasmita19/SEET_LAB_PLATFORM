@@ -8,11 +8,14 @@ const saltRounds = 10;
 // Signup Controller
 exports.signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Name, email, and password are required.' });
     }
+
+    const allowedRoles = ['User', 'Instructor', 'Admin'];
+    const userRole = allowedRoles.includes(role) ? role : 'User'; // default fallback
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -24,6 +27,7 @@ exports.signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role: userRole,
     });
 
     await newUser.save();
@@ -43,6 +47,7 @@ exports.signup = async (req, res) => {
     return res.status(500).json({ message: 'Server error.', error: error.message });
   }
 };
+
 
 // Login Controller
 exports.login = async (req, res) => {

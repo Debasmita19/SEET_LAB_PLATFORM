@@ -1,188 +1,151 @@
+// src/components/UserDashboard.jsx
 import { useEffect, useState } from "react";
-import { toast, Toaster } from "react-hot-toast"; 
+import { toast, Toaster } from "react-hot-toast";
+import API from "../utils/api";
+import UserNavbar from "./UserNavbar";
 
 function UserDashboard() {
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showRegisterForm, setShowRegisterForm] = useState(false);
-  const [registrationData, setRegistrationData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const [registeredEvents, setRegisteredEvents] = useState([]);
-  const [userEmail, setUserEmail] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [bookedEvents, setBookedEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
-    
-    setEvents([
-      { id: 1, name: "AI Conference", date: "2025-05-20", description: "A grand AI event about artificial intelligence and future tech." },
-      { id: 2, name: "Startup Meetup", date: "2025-06-15", description: "Meet startups, investors, and mentors to grow your ideas." },
-    ]);
-
-    
-    const email = localStorage.getItem("userEmail") || "User123";
-    setUserEmail(email);
+    fetchEvents();
+    fetchMyBookings();
   }, []);
 
-  const handleEventClick = (event) => {
-    setSelectedEvent(event);
-    setShowRegisterForm(false);
+  const fetchEvents = async () => {
+    try {
+      const res = await API.get("/events");
+      setEvents(res.data);
+      setFilteredEvents(res.data);
+      const uniqueCategories = [
+        "All",
+        ...new Set(res.data.map((e) => e.category || "Other")),
+      ];
+      setCategories(uniqueCategories);
+    } catch (err) {
+      toast.error("Failed to fetch events");
+    }
   };
 
-  const handleRegisterClick = () => {
-    setShowRegisterForm(true);
+  const fetchMyBookings = async () => {
+    try {
+      const res = await API.get("/events/my-bookings");
+      setBookedEvents(res.data);
+    } catch (err) {
+      toast.error("Could not fetch your bookings");
+    }
   };
 
-  const handleRegistrationSubmit = (e) => {
-    e.preventDefault();
-    const newRegistration = {
-      eventId: selectedEvent.id,
-      eventName: selectedEvent.name,
-      userName: registrationData.name,
-      userEmail: registrationData.email,
-      userPhone: registrationData.phone,
-    };
-    setRegisteredEvents([...registeredEvents, newRegistration]);
-    toast.success(`Successfully registered for ${selectedEvent.name}!`);
-    setShowRegisterForm(false);
-    setRegistrationData({ name: "", email: "", phone: "" });
+  const handleCategoryChange = (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+    setCurrentPage(1);
+    if (category === "All") setFilteredEvents(events);
+    else setFilteredEvents(events.filter((ev) => ev.category === category));
   };
 
-  const handleCancelRegistration = (eventId) => {
-    const updated = registeredEvents.filter(reg => reg.eventId !== eventId);
-    setRegisteredEvents(updated);
-    toast.error(`Registration cancelled.`);
+  const handleRegister = async (eventId) => {
+    try {
+      await API.post(`/events/${eventId}/book`);
+      toast.success("Registered successfully!");
+      fetchMyBookings();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Booking failed");
+    }
   };
+
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+  const paginatedEvents = filteredEvents.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      
-      <Toaster position="top-center" reverseOrder={false} />
+    <div className="min-h-screen bg-gray-50">
+      <UserNavbar />
+      <Toaster />
 
-    
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-indigo-700 mb-2">Welcome, {userEmail}!</h1>
-          <p className="text-gray-600">Ready to explore and register for amazing events?</p>
-        </div>
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-          alt="User Avatar"
-          className="w-16 h-16 object-cover"
-        />
-      </div>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <h1 className="text-3xl font-bold text-indigo-700 mb-4">Welcome to Events</h1>
 
-      <div className="flex gap-8">
-       
-        <div className="w-1/4 space-y-6">
-          <h2 className="text-2xl font-semibold text-indigo-700 mb-4">Upcoming Events</h2>
-          <ul className="space-y-4">
-            {events
-              .sort((a, b) => new Date(a.date) - new Date(b.date))
-              .map(event => (
-                <li
-                  key={event.id}
-                  className="p-4 bg-white rounded-lg shadow hover:shadow-xl hover:scale-105 transition cursor-pointer"
-                  onClick={() => handleEventClick(event)}
-                >
-                  <h3 className="text-lg font-semibold text-indigo-600">{event.name}</h3>
-                  <p className="text-sm text-gray-500">{event.date}</p>
-                </li>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <label className="mr-2 text-sm font-medium">Filter by Category:</label>
+            <select
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="border px-3 py-2 rounded shadow-sm"
+            >
+              {categories.map((cat) => (
+                <option key={cat}>{cat}</option>
               ))}
-          </ul>
+            </select>
+          </div>
         </div>
 
-        
-        <div className="flex-1 space-y-8 overflow-y-auto">
-         
-          {selectedEvent ? (
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-2xl font-bold text-indigo-700 mb-2">{selectedEvent.name}</h2>
-              <p className="text-gray-500 mb-2">{selectedEvent.date}</p>
-              <p className="text-gray-700 mb-4">{selectedEvent.description}</p>
-              <button
-                onClick={handleRegisterClick}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {paginatedEvents.length > 0 ? (
+            paginatedEvents.map((event) => (
+              <div
+                key={event._id}
+                className="bg-white p-5 rounded-xl shadow hover:shadow-lg border"
               >
-                Register
-              </button>
+                <h2 className="text-xl font-bold text-indigo-700 mb-2">{event.name}</h2>
+                <p className="text-sm text-gray-500 mb-1">{event.date}</p>
+                <p className="text-sm text-gray-600 mb-3">{event.description}</p>
+                <button
+                  onClick={() => handleRegister(event._id)}
+                  className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+                >
+                  Register
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-600">No events available at this time.</p>
+          )}
+        </div>
 
-             
-              {showRegisterForm && (
-                <form onSubmit={handleRegistrationSubmit} className="mt-6 space-y-4">
-                  <div>
-                    <label className="block text-gray-700 font-medium mb-1">Name</label>
-                    <input
-                      type="text"
-                      value={registrationData.name}
-                      onChange={(e) => setRegistrationData({ ...registrationData, name: e.target.value })}
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 font-medium mb-1">Email</label>
-                    <input
-                      type="email"
-                      value={registrationData.email}
-                      onChange={(e) => setRegistrationData({ ...registrationData, email: e.target.value })}
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 font-medium mb-1">Phone</label>
-                    <input
-                      type="tel"
-                      value={registrationData.phone}
-                      onChange={(e) => setRegistrationData({ ...registrationData, phone: e.target.value })}
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg transition"
-                  >
-                    Submit Registration
-                  </button>
-                </form>
-              )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8 space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`px-4 py-2 rounded border ${
+                  currentPage === index + 1
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white text-indigo-600 border-indigo-600"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Bookings Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-semibold text-indigo-700 mb-4">My Bookings</h2>
+          {bookedEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {bookedEvents.map((book) => (
+                <div key={book._id} className="bg-white p-4 border rounded-lg shadow">
+                  <h3 className="font-bold text-indigo-600">{book.eventName}</h3>
+                  <p className="text-sm text-gray-500">{book.eventDate}</p>
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="text-xl text-gray-600">Please select an event to view details.</div>
+            <p className="text-gray-600">You have not registered for any events yet.</p>
           )}
-
-          
-          <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-2xl font-bold text-indigo-700 mb-4">My Registered Events</h2>
-            {registeredEvents.length > 0 ? (
-              <ul className="space-y-4">
-                {registeredEvents.map((reg, index) => (
-                  <li
-                    key={index}
-                    className="p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 flex justify-between items-center transition"
-                  >
-                    <div>
-                      <h3 className="font-semibold text-indigo-600">{reg.eventName}</h3>
-                      <p className="text-gray-500 text-sm">Registered as: {reg.userName}</p>
-                      <p className="text-gray-500 text-sm">Email: {reg.userEmail}</p>
-                      <p className="text-gray-500 text-sm">Phone: {reg.userPhone}</p>
-                    </div>
-                    <button
-                      onClick={() => handleCancelRegistration(reg.eventId)}
-                      className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg transition"
-                    >
-                      Cancel
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-600">You have not registered for any events yet.</p>
-            )}
-          </div>
         </div>
       </div>
     </div>

@@ -45,7 +45,7 @@ function App() {
             <ProtectedRoute role="Admin">
               <ManageUsers />
             </ProtectedRoute>
-          }
+          } 
         />
         <Route
           path="/admin/manage-events"

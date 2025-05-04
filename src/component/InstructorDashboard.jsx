@@ -57,14 +57,22 @@ function InstructorDashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
-              <div key={event._id} className="bg-white shadow-lg rounded-xl p-6 border border-gray-100 relative">
-                <h3 className="text-2xl font-semibold text-orange-700 mb-1">{event.title}</h3>
+              <div
+                key={event._id}
+                className="bg-white shadow-lg rounded-xl p-6 border border-gray-100 relative"
+              >
+                <h3 className="text-2xl font-semibold text-orange-700 mb-1">
+                  {event.title}
+                </h3>
                 <p className="text-sm text-gray-600 mb-1">
                   📅 {new Date(event.date).toLocaleDateString()} at ⏰ {event.time}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">📍 {event.location}</p>
                 <p className="text-sm text-gray-500 mb-2">
-                  🏷️ <span className="bg-gray-200 rounded px-2 py-0.5 text-xs">{event.category}</span>
+                  🏷️{" "}
+                  <span className="bg-gray-200 rounded px-2 py-0.5 text-xs">
+                    {event.category}
+                  </span>
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {event.tags?.map((tag, i) => (
@@ -101,7 +109,7 @@ function InstructorDashboard() {
           </div>
         )}
 
-        {editModalEvent && (
+        {editModalEvent !== null && (
           <EditEventModal
             event={editModalEvent}
             onClose={() => setEditModalEvent(null)}

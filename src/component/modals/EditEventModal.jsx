@@ -1,3 +1,4 @@
+// src/components/modals/EditEventModal.jsx
 import { useState, useEffect } from "react";
 import API from "../../utils/api";
 
@@ -14,40 +15,73 @@ function EditEventModal({ event, onClose, onUpdate }) {
   });
 
   useEffect(() => {
-    if (event) {
+    if (event && Object.keys(event).length > 0) {
+      // Editing existing event
       setFormData({
-        ...event,
+        title: event.title || "",
+        description: event.description || "",
+        date: event.date?.slice(0, 10) || "",
+        time: event.time || "",
+        location: event.location || "",
+        category: event.category || "",
         tags: event.tags?.join(", ") || "",
+        capacity: event.capacity || 100,
+      });
+    } else {
+      // Creating new event
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        category: "",
+        tags: "",
+        capacity: 100,
       });
     }
   }, [event]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const updatedEvent = {
       ...formData,
-      tags: formData.tags.split(",").map((tag) => tag.trim()),
+      tags: formData.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
     };
 
     try {
-      await API.put(`/events/${event._id}`, updatedEvent);
+      if (event && event._id) {
+        // Edit existing
+        await API.put(`/events/${event._id}`, updatedEvent);
+      } else {
+        // Create new
+        await API.post("/events", updatedEvent);
+      }
+
       onUpdate(); // Refresh events
       onClose();  // Close modal
     } catch (error) {
-      console.error("Update failed", error);
+      console.error("Save failed", error);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-lg relative p-6">
-        {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-orange-700">Edit Event</h2>
+          <h2 className="text-2xl font-bold text-orange-700">
+            {event && event._id ? "Edit Event" : "Create Event"}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-red-500 text-xl font-bold"
@@ -56,7 +90,6 @@ function EditEventModal({ event, onClose, onUpdate }) {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             name="title"
@@ -78,7 +111,7 @@ function EditEventModal({ event, onClose, onUpdate }) {
           <input
             type="date"
             name="date"
-            value={formData.date?.slice(0, 10)}
+            value={formData.date}
             onChange={handleChange}
             required
             className="w-full border px-4 py-2 rounded"
@@ -118,10 +151,10 @@ function EditEventModal({ event, onClose, onUpdate }) {
             name="capacity"
             value={formData.capacity}
             onChange={handleChange}
+            placeholder="Capacity"
             className="w-full border px-4 py-2 rounded"
           />
 
-          {/* Footer Buttons */}
           <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"

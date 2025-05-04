@@ -35,7 +35,7 @@ function UserDashboard() {
 
   const fetchMyBookings = async () => {
     try {
-      const res = await API.get("/events/my-bookings");
+      const res = await API.get("/booking/my-bookings");
       setBookedEvents(res.data);
     } catch (err) {
       toast.error("Could not fetch your bookings");
@@ -52,7 +52,7 @@ function UserDashboard() {
 
   const handleRegister = async (eventId) => {
     try {
-      await API.post(`/events/${eventId}/book`);
+      await API.post(`/booking/${eventId}/book`);
       toast.success("Registered successfully!");
       fetchMyBookings();
     } catch (err) {
@@ -67,12 +67,12 @@ function UserDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
       <UserNavbar />
       <Toaster />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-indigo-700 mb-4">Welcome to Events</h1>
+        <h1 className="text-3xl font-bold text-indigo-700 mb-6">Explore Events</h1>
 
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -80,7 +80,7 @@ function UserDashboard() {
             <select
               value={selectedCategory}
               onChange={handleCategoryChange}
-              className="border px-3 py-2 rounded shadow-sm"
+              className="border px-3 py-2 rounded shadow-sm focus:ring focus:ring-indigo-300"
             >
               {categories.map((cat) => (
                 <option key={cat}>{cat}</option>
@@ -94,11 +94,14 @@ function UserDashboard() {
             paginatedEvents.map((event) => (
               <div
                 key={event._id}
-                className="bg-white p-5 rounded-xl shadow hover:shadow-lg border"
+                className="bg-white p-5 rounded-xl shadow hover:shadow-lg border border-indigo-100"
               >
-                <h2 className="text-xl font-bold text-indigo-700 mb-2">{event.name}</h2>
-                <p className="text-sm text-gray-500 mb-1">{event.date}</p>
-                <p className="text-sm text-gray-600 mb-3">{event.description}</p>
+                <h2 className="text-xl font-bold text-indigo-800 mb-2">{event.title}</h2>
+                <p className="text-sm text-gray-500 mb-1">
+                  📅 {new Date(event.date).toLocaleDateString()} at ⏰ {event.time}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">📍 {event.location}</p>
+                <p className="text-sm text-gray-700 mb-3">{event.description}</p>
                 <button
                   onClick={() => handleRegister(event._id)}
                   className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
@@ -112,17 +115,16 @@ function UserDashboard() {
           )}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-8 space-x-2">
             {Array.from({ length: totalPages }, (_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
-                className={`px-4 py-2 rounded border ${
+                className={`px-4 py-2 rounded border font-semibold transition ${
                   currentPage === index + 1
                     ? "bg-indigo-600 text-white"
-                    : "bg-white text-indigo-600 border-indigo-600"
+                    : "bg-white text-indigo-600 border-indigo-600 hover:bg-indigo-100"
                 }`}
               >
                 {index + 1}
@@ -131,15 +133,22 @@ function UserDashboard() {
           </div>
         )}
 
-        {/* Bookings Section */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-semibold text-indigo-700 mb-4">My Bookings</h2>
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-indigo-700 mb-6">My Bookings</h2>
           {bookedEvents.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {bookedEvents.map((book) => (
-                <div key={book._id} className="bg-white p-4 border rounded-lg shadow">
-                  <h3 className="font-bold text-indigo-600">{book.eventName}</h3>
-                  <p className="text-sm text-gray-500">{book.eventDate}</p>
+                <div key={book._id} className="bg-white p-5 rounded-lg border shadow">
+                  <h3 className="text-lg font-semibold text-indigo-700 mb-1">
+                    {book.event?.title || "Untitled Event"}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    📅 {new Date(book.event?.date).toLocaleDateString()} at ⏰ {book.event?.time}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">📍 {book.event?.location}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Registered on: {new Date(book.bookedAt).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>

@@ -1,5 +1,6 @@
 // src/components/modals/DeleteModal.jsx
 import React from "react";
+import API from "../../utils/api";
 
 const DeleteModal = ({ event, onClose, onDelete }) => {
   const handleDelete = () => {

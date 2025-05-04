@@ -24,6 +24,7 @@ function AdminLogin() {
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", user.email);
       localStorage.setItem("userRole", user.role);
+      localStorage.setItem("isAdminLoggedIn", true);
       navigate("/admin/dashboard");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");

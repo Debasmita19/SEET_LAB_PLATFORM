@@ -7,7 +7,7 @@ const permit = require('../middleware/roleMiddleware');
 // Book an event (User/Student)
 router.post('/:id/book', authMiddleware, permit('User', 'Instructor', 'Admin'), bookingController.bookEvent);
 
-// Get logged-in user's bookings
+// Get logged-in user's bookings    
 router.get('/my-bookings', authMiddleware, bookingController.getMyBookings);
 
 // View all bookings for a specific event

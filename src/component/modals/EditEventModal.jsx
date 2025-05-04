@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API from "../../utils/api";
 
 function EditEventModal({ event, onClose, onUpdate }) {
   const [formData, setFormData] = useState({

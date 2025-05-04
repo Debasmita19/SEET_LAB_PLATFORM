@@ -31,6 +31,7 @@ exports.bookEvent = async (req, res) => {
 // View my bookings (Student)
 exports.getMyBookings = async (req, res) => {
   try {
+    // console.log(req.user.id)
     const bookings = await Booking.find({ student: req.user.id })
       .populate('event')
       .sort({ bookedAt: -1 });

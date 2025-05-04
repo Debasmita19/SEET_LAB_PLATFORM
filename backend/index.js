@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/events', bookingRoutes);
+app.use('/api/booking', bookingRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
 

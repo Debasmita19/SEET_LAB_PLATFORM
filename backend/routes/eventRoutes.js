@@ -8,22 +8,29 @@ const permit = require('../middleware/roleMiddleware');
 router.post(
   '/',
   authMiddleware,
-  permit('Tutor', 'Admin'),
+  permit('Instructor', 'Admin'),
   eventController.createEvent
 );
 
 // Get all events (Public)
 router.get('/', eventController.getAllEvents);
+// Get events created by the logged-in instructor
+router.get(
+  '/my',
+  authMiddleware,
+  permit('Instructor'),
+  eventController.getMyEvents
+);
 
 // Get single event by ID (Public)
 router.get('/:id', eventController.getEventById);
 
 // Edit event details (Admin or the instructor who created it)
-router.put('/:id', authMiddleware, permit('Admin', 'Tutor'), eventController.updateEvent);
+router.put('/:id', authMiddleware, permit('Admin', 'Instructor'), eventController.updateEvent);
 
 
 // Confirm attendee for an event
-router.put('/:id/confirm-attendee/:userId', authMiddleware, permit('Tutor', 'Admin'), eventController.confirmAttendee);
+router.put('/:id/confirm-attendee/:userId', authMiddleware, permit('Instructor', 'Admin'), eventController.confirmAttendee);
 
 
 module.exports = router;

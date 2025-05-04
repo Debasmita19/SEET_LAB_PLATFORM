@@ -15,6 +15,8 @@ import InstructorSignup from "./component/InstructorSignup";
 import UserDashboard from "./component/UserDashboard";
 import ProtectedRoute from "./component/ProtectedRoute";
 import Unauthorized from "./component/Unauthorized"; // Add this page separately
+import ManageUsers from "./component/ManageUsers";
+import ManageEvents from "./component/ManageEvents";
 
 function App() {
   return (
@@ -34,6 +36,22 @@ function App() {
           element={
             <ProtectedRoute role="Admin">
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-users"
+          element={
+            <ProtectedRoute role="Admin">
+              <ManageUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-events"
+          element={
+            <ProtectedRoute role="Admin">
+              <ManageEvents />
             </ProtectedRoute>
           }
         />

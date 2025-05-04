@@ -101,3 +101,12 @@ exports.confirmAttendee = async (req, res) => {
     return res.status(500).json({ message: 'Server error while confirming attendee.', error: error.message });
   }
 };
+
+exports.getMyEvents = async (req, res) => {
+  try {
+    const events = await Event.find({ createdBy: req.user.id }).sort({ date: 1 });
+    return res.status(200).json(events);
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to fetch your events.', error: error.message });
+  }
+};

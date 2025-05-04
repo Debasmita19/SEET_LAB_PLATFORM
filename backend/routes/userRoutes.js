@@ -16,6 +16,14 @@ router.put('/me/password', authMiddleware, userController.changeMyPassword);
 
 // Admin changes any user’s password
 router.put('/:id/password', authMiddleware, permit('Admin'), userController.adminChangePassword);
+// GET all users (Admin only)
+router.get('/', authMiddleware, permit('Admin'), userController.getAllUsers);
+
+// GET user by ID
+router.get('/:id', authMiddleware, permit('Admin'), userController.getUserById);
+
+// PUT update user
+router.put('/:id', authMiddleware, permit('Admin'), userController.updateUser);
 
 
 module.exports = router;

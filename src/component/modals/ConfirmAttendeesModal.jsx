@@ -1,10 +1,9 @@
-
-// src/components/modals/ConfirmAttendeesModal.jsx
 import { useEffect, useState } from "react";
 import API from "../../utils/api";
 
 function ConfirmAttendeesModal({ event, onClose }) {
   const [attendees, setAttendees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchAttendees();
@@ -12,8 +11,8 @@ function ConfirmAttendeesModal({ event, onClose }) {
 
   const fetchAttendees = async () => {
     try {
-      const res = await API.get(`/events/${event._id}`);
-      setAttendees(res.data.confirmedAttendees || []);
+      const res = await API.get(`/booking/event/${event._id}/bookings`);
+      setAttendees(res.data.bookings || []);
     } catch (err) {
       console.error("Failed to load attendees");
     }
@@ -24,40 +23,68 @@ function ConfirmAttendeesModal({ event, onClose }) {
       await API.put(`/events/${event._id}/confirm-attendee/${userId}`);
       fetchAttendees();
     } catch (err) {
-      alert("Error confirming attendee");
+      const msg = err.response?.data?.message || "Error confirming attendee";
+      alert(msg);
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
-        <h2 className="text-xl font-bold text-indigo-700 mb-4">
-          Confirm Attendees - {event.title}
-        </h2>
+  const filtered = attendees.filter((att) =>
+    att.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    att.student.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-        {attendees.length === 0 ? (
-          <p className="text-gray-600">No attendees registered yet.</p>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 px-4">
+      <div className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-xl max-h-[80vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-4 text-indigo-700">Confirm Attendees - {event.title}</h2>
+
+        <input
+          type="text"
+          placeholder="Search by name or email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full mb-4 px-4 py-2 border rounded focus:outline-none focus:ring"
+        />
+
+        {filtered.length === 0 ? (
+          <p className="text-gray-600">No matching attendees.</p>
         ) : (
-          <ul className="space-y-3 max-h-64 overflow-y-auto">
-            {attendees.map((attendee) => (
-              <li key={attendee._id} className="flex justify-between items-center p-2 bg-gray-50 border rounded">
-                <div>
-                  <p className="font-medium text-gray-800">{attendee.name}</p>
-                  <p className="text-sm text-gray-500">{attendee.email}</p>
-                </div>
-                <button
-                  onClick={() => confirmAttendee(attendee._id)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-                >
-                  Confirm
-                </button>
-              </li>
-            ))}
-          </ul>
+          <table className="w-full text-sm border">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="text-left px-4 py-2">Name</th>
+                <th className="text-left px-4 py-2">Email</th>
+                <th className="text-left px-4 py-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((booking) => (
+                <tr key={booking._id} className="border-t">
+                  <td className="px-4 py-2">{booking.student.name}</td>
+                  <td className="px-4 py-2">{booking.student.email}</td>
+                  <td className="px-4 py-2">
+                    {event.confirmedAttendees.includes(booking.student._id) ? (
+                      <span className="text-green-600 font-medium">Confirmed</span>
+                    ) : (
+                      <button
+                        onClick={() => confirmAttendee(booking.student._id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Confirm
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
 
-        <div className="mt-4 flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 border rounded hover:bg-gray-100">
+        <div className="mt-6 text-right">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded border"
+          >
             Close
           </button>
         </div>

@@ -1,6 +1,7 @@
 // src/components/modals/EditEventModal.jsx
 import { useState, useEffect } from "react";
 import API from "../../utils/api";
+import { toast } from "react-toastify";
 
 function EditEventModal({ event, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -61,17 +62,18 @@ function EditEventModal({ event, onClose, onUpdate }) {
 
     try {
       if (event && event._id) {
-        // Edit existing
         await API.put(`/events/${event._id}`, updatedEvent);
+        toast.success("Event updated successfully!");
       } else {
-        // Create new
         await API.post("/events", updatedEvent);
+        toast.success("Event created successfully!");
       }
 
       onUpdate(); // Refresh events
       onClose();  // Close modal
     } catch (error) {
       console.error("Save failed", error);
+      toast.error("Failed to save the event. Please try again.");
     }
   };
 
@@ -91,84 +93,18 @@ function EditEventModal({ event, onClose, onUpdate }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Title"
-            required
-            className="w-full border px-4 py-2 rounded"
-          />
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Description"
-            required
-            rows="3"
-            className="w-full border px-4 py-2 rounded"
-          />
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-            className="w-full border px-4 py-2 rounded"
-          />
-          <input
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            required
-            className="w-full border px-4 py-2 rounded"
-          />
-          <input
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Location"
-            required
-            className="w-full border px-4 py-2 rounded"
-          />
-          <input
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="Category"
-            className="w-full border px-4 py-2 rounded"
-          />
-          <input
-            name="tags"
-            value={formData.tags}
-            onChange={handleChange}
-            placeholder="Tags (comma separated)"
-            className="w-full border px-4 py-2 rounded"
-          />
-          <input
-            type="number"
-            name="capacity"
-            value={formData.capacity}
-            onChange={handleChange}
-            placeholder="Capacity"
-            className="w-full border px-4 py-2 rounded"
-          />
+          <input name="title" value={formData.title} onChange={handleChange} placeholder="Title" required className="w-full border px-4 py-2 rounded" />
+          <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" required rows="3" className="w-full border px-4 py-2 rounded" />
+          <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+          <input type="time" name="time" value={formData.time} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+          <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" required className="w-full border px-4 py-2 rounded" />
+          <input name="category" value={formData.category} onChange={handleChange} placeholder="Category" className="w-full border px-4 py-2 rounded" />
+          <input name="tags" value={formData.tags} onChange={handleChange} placeholder="Tags (comma separated)" className="w-full border px-4 py-2 rounded" />
+          <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} placeholder="Capacity" className="w-full border px-4 py-2 rounded" />
 
           <div className="flex justify-end gap-4 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Save Changes
-            </button>
+            <button type="button" onClick={onClose} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">Cancel</button>
+            <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Changes</button>
           </div>
         </form>
       </div>

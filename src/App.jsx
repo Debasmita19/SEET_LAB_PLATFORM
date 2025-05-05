@@ -14,108 +14,75 @@ import InstructorLogin from "./component/InstructorLogin";
 import InstructorSignup from "./component/InstructorSignup";
 import UserDashboard from "./component/UserDashboard";
 import ProtectedRoute from "./component/ProtectedRoute";
-import Unauthorized from "./component/Unauthorized"; // Add this page separately
+import Unauthorized from "./component/Unauthorized";
 import ManageUsers from "./component/ManageUsers";
 import ManageEvents from "./component/ManageEvents";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* Home */}
-        <Route path="/" element={<Home />} />
+      <>
+        <Routes>
+          {/* Home */}
+          <Route path="/" element={<Home />} />
+          <Route path="/choose-role" element={<ChooseRole />} />
 
-        {/* Choose Role */}
-        <Route path="/choose-role" element={<ChooseRole />} />
-
-        {/* Admin */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/signup" element={<AdminSignup />} />
-        <Route
-          path="/admin/dashboard"
-          element={
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/signup" element={<AdminSignup />} />
+          <Route path="/admin/dashboard" element={
             <ProtectedRoute role="Admin">
               <AdminDashboard />
             </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/manage-users"
-          element={
+          } />
+          <Route path="/admin/manage-users" element={
             <ProtectedRoute role="Admin">
               <ManageUsers />
             </ProtectedRoute>
-          } 
-        />
-        <Route
-          path="/admin/manage-events"
-          element={
+          } />
+          <Route path="/admin/manage-events" element={
             <ProtectedRoute role="Admin">
               <ManageEvents />
             </ProtectedRoute>
-          }
-        />
+          } />
 
-        {/* User */}
-        <Route path="/user/login" element={<UserLogin />} />
-        <Route path="/user/signup" element={<UserSignup />} />
-        <Route
-          path="/user/dashboard"
-          element={
+          {/* User Routes */}
+          <Route path="/user/login" element={<UserLogin />} />
+          <Route path="/user/signup" element={<UserSignup />} />
+          <Route path="/user/dashboard" element={
             <ProtectedRoute role="User">
               <UserDashboard />
             </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/profile"
-          element={
+          } />
+          <Route path="/user/profile" element={
             <ProtectedRoute role="User">
               <UserProfile />
             </ProtectedRoute>
-          }
-        />
+          } />
 
-        {/* Instructor */}
-        <Route path="/instructor/login" element={<InstructorLogin />} />
-        <Route path="/instructor/signup" element={<InstructorSignup />} />
-        <Route
-          path="/instructor/dashboard"
-          element={
+          {/* Instructor Routes */}
+          <Route path="/instructor/login" element={<InstructorLogin />} />
+          <Route path="/instructor/signup" element={<InstructorSignup />} />
+          <Route path="/instructor/dashboard" element={
             <ProtectedRoute role="Instructor">
               <InstructorDashboard />
             </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/instructor/profile"
-          element={
+          } />
+          <Route path="/instructor/profile" element={
             <ProtectedRoute role="Instructor">
               <InstructorProfile />
             </ProtectedRoute>
-          }
-        />
+          } />
 
-<Route
-          path="/user/dashboard"
-          element={
-            <ProtectedRoute role="User">
-              <UserDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/profile"
-          element={
-            <ProtectedRoute role="User">
-              <UserProfile />
-            </ProtectedRoute>
-          }
-        />
+          {/* Unauthorized */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
+        </Routes>
 
-        {/* Unauthorized Page */}
-        <Route path="/unauthorized" element={<Unauthorized />} />
-      </Routes>
+        {/* Global Toast Notification Container */}
+        <ToastContainer position="top-right" autoClose={3000} />
+      </>
     </Router>
   );
 }

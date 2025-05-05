@@ -1,4 +1,6 @@
 const Event = require('../models/Event');
+const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
 
 // Create a new event (Instructor only)
 exports.createEvent = async (req, res) => {
@@ -20,7 +22,17 @@ exports.createEvent = async (req, res) => {
     });
 
     await newEvent.save();
-    return res.status(201).json({ message: 'Event created successfully.', event: newEvent });
+
+    // Notify all users via email
+    const users = await User.find({ role: 'User' }).select('email');
+    const emails = users.map(user => user.email);
+    const text = `A new event "${title}" has been scheduled on ${date} at ${time} in ${location}.`;
+
+    for (const email of emails) {
+      await sendEmail(email, 'New Event Notification', text);
+    }
+
+    return res.status(201).json({ message: 'Event created and users notified.', event: newEvent });
   } catch (error) {
     return res.status(500).json({ message: 'Server error while creating event.', error: error.message });
   }
@@ -59,7 +71,6 @@ exports.updateEvent = async (req, res) => {
       return res.status(404).json({ message: 'Event not found.' });
     }
 
-    // Only allow update if Admin or creator of the event
     if (req.user.role !== 'Admin' && event.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: 'You are not authorized to edit this event.' });
     }
@@ -83,12 +94,10 @@ exports.confirmAttendee = async (req, res) => {
       return res.status(404).json({ message: 'Event not found.' });
     }
 
-    // Only Admin or the event creator can confirm
     if (req.user.role !== 'Admin' && event.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to confirm attendees.' });
     }
 
-    // Avoid double confirmation
     if (event.confirmedAttendees.includes(userId)) {
       return res.status(400).json({ message: 'Attendee already confirmed.' });
     }
@@ -116,7 +125,6 @@ exports.deleteEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
 
-    // Optionally restrict deletion only to the creator or admin
     if (
       req.user.role === 'Instructor' &&
       event.createdBy.toString() !== req.user.id
@@ -124,7 +132,7 @@ exports.deleteEvent = async (req, res) => {
       return res.status(403).json({ message: 'Unauthorized to delete this event' });
     }
 
-    await Event.findByIdAndDelete(req.params.id);  
+    await Event.findByIdAndDelete(req.params.id);
     res.json({ message: 'Event deleted successfully' });
   } catch (error) {
     console.error('Delete error:', error);

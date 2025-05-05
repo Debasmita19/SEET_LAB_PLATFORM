@@ -125,6 +125,7 @@ exports.deleteEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
 
+    // Authorization check
     if (
       req.user.role === 'Instructor' &&
       event.createdBy.toString() !== req.user.id
@@ -132,8 +133,13 @@ exports.deleteEvent = async (req, res) => {
       return res.status(403).json({ message: 'Unauthorized to delete this event' });
     }
 
+    // Delete all related bookings
+    await Booking.deleteMany({ event: req.params.id });
+
+    // Delete the event
     await Event.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Event deleted successfully' });
+
+    res.json({ message: 'Event and related registrations deleted successfully' });
   } catch (error) {
     console.error('Delete error:', error);
     res.status(500).json({ message: 'Server error' });

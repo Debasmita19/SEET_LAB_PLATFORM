@@ -29,7 +29,7 @@ function InstructorDashboard() {
 
   const handleDelete = async (eventId) => {
     try {
-      await API.delete(`/events/${eventId}`);
+      //await API.delete(`/events/${eventId}`);
       fetchEvents();
     } catch (err) {
       alert("Failed to delete event");

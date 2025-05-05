@@ -1,6 +1,7 @@
 const Event = require('../models/Event');
+const Booking = require('../models/Booking')
 const User = require('../models/User');
-const sendEmail = require('../utils/sendEmail');
+//const sendEmail = require('../utils/sendEmail');
 
 // Create a new event (Instructor only)
 exports.createEvent = async (req, res) => {
@@ -27,11 +28,11 @@ exports.createEvent = async (req, res) => {
     const users = await User.find({ role: 'User' }).select('email');
     const emails = users.map(user => user.email);
     const text = `A new event "${title}" has been scheduled on ${date} at ${time} in ${location}.`;
-
+/*
     for (const email of emails) {
       await sendEmail(email, 'New Event Notification', text);
     }
-
+*/
     return res.status(201).json({ message: 'Event created and users notified.', event: newEvent });
   } catch (error) {
     return res.status(500).json({ message: 'Server error while creating event.', error: error.message });

@@ -29,6 +29,21 @@ Tech Stack
 | Password Security | bcrypt          |
 
 
+SEET_LAB_PLATFORM/
+├── backend/
+│ ├── controllers/
+│ ├── middleware/
+│ ├── models/
+│ ├── routes/
+│ ├── index.js
+├── frontend/
+│ ├── src/
+│ │ ├── components/
+│ │ ├── pages/
+│ │ ├── App.jsx
+│ │ ├── main.jsx
+
+
 Authentication & Authorization
 
 - **bcrypt** is used to hash passwords before storing them in the database.
